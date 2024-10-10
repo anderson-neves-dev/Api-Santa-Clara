@@ -3,6 +3,8 @@
 /node_modules
 /build
 
+mysql-data
+package-lock.json
 # Logs
 logs
 *.log

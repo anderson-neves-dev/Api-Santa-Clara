@@ -32,6 +32,28 @@
 $ npm install
 ```
 
+## Rodar o mysql no docker compose
+```bash
+# Rodar container
+docker-compose up -d
+# Entrar na bash do container
+docker exec -it mysql-server bash
+# Listar todos os containers
+docker ps -a
+
+# Para parar o docker compose
+docker-compose down
+
+# Para Parar e apagar o volume
+docker-compose down -v
+
+# Para de rodar e remover todos os containers
+docker stop $(docker ps -aq)
+docker rm $(docker ps -aq)
+# Restartar o container
+docker restart my-mysql
+```
+
 ## Compile and run the project
 
 ```bash
