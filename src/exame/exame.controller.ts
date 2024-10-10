@@ -17,10 +17,6 @@ import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 export class ExameController {
   constructor(private readonly exameService: ExameService) {}
 
-  @Get()
-  findAll() {
-    return this.exameService.findAll();
-  }
   @Post('exame')
   @ApiOperation({ summary: 'Criar um novo exame' })
   @ApiBody({
@@ -29,6 +25,14 @@ export class ExameController {
   })
   async create(@Body() createExameDto: CreateExameDto) {
     return this.exameService.cadastrar(createExameDto);
+  }
+
+  @Get()
+  @ApiOperation({
+    summary: 'Listar todos os exames',
+  })
+  BuscarTodos() {
+    return this.exameService.findAll();
   }
 
   // @Get(':id')
