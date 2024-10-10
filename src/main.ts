@@ -7,10 +7,9 @@ async function bootstrap() {
 
   // Configuração do Swagger
   const config = new DocumentBuilder()
-    .setTitle('API Exemplo')
-    .setDescription('Documentação da API Exemplo')
+    .setTitle('API Santa Clara')
+    .setDescription('Documentação da API Clinica Santa Clara')
     .setVersion('1.0')
-    .addTag('exemplo')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
