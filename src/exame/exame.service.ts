@@ -4,6 +4,7 @@ import { Exame } from './entities/exame.entity';
 import { CreateExameDto } from './dto/create-exame.dto';
 import { ResultadoDto } from 'src/dto/resultado.dto';
 import { error } from 'console';
+import { UpdateExameDto } from './dto/update-exame.dto';
 
 @Injectable()
 export class ExameService {
@@ -12,7 +13,7 @@ export class ExameService {
     private exameRepository: Repository<Exame>,
   ) {}
 
-  async cadastrar(exame: CreateExameDto): Promise<ResultadoDto> {
+  async create(exame: CreateExameDto): Promise<ResultadoDto> {
     let novoExame = new Exame();
     novoExame.especialidade = exame.especialidade;
     return this.exameRepository
@@ -33,5 +34,18 @@ export class ExameService {
 
   async findAll(): Promise<Exame[]> {
     return this.exameRepository.find();
+  }
+  async findOne(id: number): Promise<Exame[]> {
+    return this.exameRepository.find({ where: { id } });
+  }
+
+  async update(id: number, exameUpdate: UpdateExameDto) {
+    await this.exameRepository.update(id, exameUpdate);
+
+    return this.exameRepository.findOne({ where: { id } });
+  }
+
+  async delete(id: number): Promise<void> {
+    await this.exameRepository.delete(id);
   }
 }

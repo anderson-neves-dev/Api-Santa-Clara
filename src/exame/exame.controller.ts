@@ -12,7 +12,7 @@ import { CreateExameDto } from './dto/create-exame.dto';
 import { UpdateExameDto } from './dto/update-exame.dto';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('exame')
+@ApiTags('Exame')
 @Controller('exame')
 export class ExameController {
   constructor(private readonly exameService: ExameService) {}
@@ -24,7 +24,7 @@ export class ExameController {
     type: CreateExameDto,
   })
   async create(@Body() createExameDto: CreateExameDto) {
-    return this.exameService.cadastrar(createExameDto);
+    return this.exameService.create(createExameDto);
   }
 
   @Get()
@@ -35,18 +35,18 @@ export class ExameController {
     return this.exameService.findAll();
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.exameService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.exameService.findOne(+id);
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateExameDto: UpdateExameDto) {
-  //   return this.exameService.update(+id, updateExameDto);
-  // }
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateExameDto: UpdateExameDto) {
+    return this.exameService.update(+id, updateExameDto);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.exameService.remove(+id);
-  // }
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.exameService.delete(+id);
+  }
 }
