@@ -17,7 +17,7 @@ import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 export class ExameController {
   constructor(private readonly exameService: ExameService) {}
 
-  @Post('exame')
+  @Post()
   @ApiOperation({ summary: 'Criar um novo exame' })
   @ApiBody({
     description: 'Dados de exame',

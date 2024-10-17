@@ -14,8 +14,7 @@ export class ExameService {
   ) {}
 
   async create(exame: CreateExameDto): Promise<ResultadoDto> {
-    let novoExame = new Exame();
-    novoExame.especialidade = exame.especialidade;
+    let novoExame = new Exame(exame);
     return this.exameRepository
       .save(novoExame)
       .then((result) => {
