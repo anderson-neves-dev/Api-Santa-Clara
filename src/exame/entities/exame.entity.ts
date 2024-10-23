@@ -6,7 +6,10 @@ export class Exame {
   id: number;
 
   @Column({ type: 'varchar', length: 100 })
-  especialidade: string;
+  specialty: string;
+
+  @Column({ type: 'varchar', length: 100 })
+  category: string;
 
   constructor(init?: Partial<Exame>) {
     Object.assign(this, init);
