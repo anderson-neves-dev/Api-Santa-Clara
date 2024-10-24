@@ -10,8 +10,14 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 
+import { CreatePacienteDTO } from './dto/create-paciente.dto';
+import { UpdatePacienteDTO } from './dto/update-paciente.dto';
+import { PacienteService } from './paciente.service';
+
 @Controller('paciente')
 export class PacienteController {
+  constructor(private readonly pacienteService: PacienteService) {}
+
   @Get()
   findAll() {
     return this.pacienteService.findAll();
@@ -36,10 +42,7 @@ export class PacienteController {
   }
 
   @Delete('/:id')
-  delete(
-    @Param('id', ParseIntPipe) id: number,
-    deletePacienteDTO: DeletePacienteDTO,
-  ) {
-    return this.pacienteService.delete(id, deletePacienteDTO);
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.pacienteService.delete(id);
   }
 }
