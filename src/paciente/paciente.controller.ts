@@ -13,10 +13,22 @@ import {
 import { CreatePacienteDTO } from './dto/create-paciente.dto';
 import { UpdatePacienteDTO } from './dto/update-paciente.dto';
 import { PacienteService } from './paciente.service';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Paciente')
 @Controller('paciente')
 export class PacienteController {
   constructor(private readonly pacienteService: PacienteService) {}
+
+  @Post()
+  @ApiOperation({ description: 'Cadastrar um novo paciente' })
+  @ApiBody({
+    description: 'Dados do Paciente',
+    type: CreatePacienteDTO,
+  })
+  async create(@Body() createPacienteDTO: CreatePacienteDTO) {
+    return this.pacienteService.create(createPacienteDTO);
+  }
 
   @Get()
   findAll() {
@@ -26,11 +38,6 @@ export class PacienteController {
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.pacienteService.findOne(id);
-  }
-
-  @Post()
-  async create(@Body() createPacienteDTO: CreatePacienteDTO) {
-    return this.pacienteService.create(createPacienteDTO);
   }
 
   @Put('/:id')
