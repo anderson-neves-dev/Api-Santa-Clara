@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class CreatePacienteDTO {
   @ApiProperty()
@@ -10,6 +10,7 @@ export class CreatePacienteDTO {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @MaxLength(100)
   nome: string;
 
   @ApiProperty()

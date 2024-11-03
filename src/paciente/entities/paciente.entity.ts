@@ -5,12 +5,21 @@ export class Paciente {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    length: 11,
+    unique: true,
+  })
   cpf: string;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    length: 100,
+  })
   nome: string;
 
-  @Column()
+  @Column({
+    type: 'date',
+  })
   data_nascimento: Date;
 }
