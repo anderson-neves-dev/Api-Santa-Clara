@@ -1,9 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ResultadoDto } from 'src/dto/resultado.dto';
 import { CreatePacienteDTO } from './dto/create-paciente.dto';
 import { Paciente } from './entities/paciente.entity';
 import { UpdatePacienteDTO } from './dto/update-paciente.dto';
 import { Repository } from 'typeorm';
+import { removeSpecialChars } from 'src/shareds/helpers';
 
 @Injectable()
 export class PacienteService {
@@ -12,24 +17,26 @@ export class PacienteService {
     private pacienteRepository: Repository<Paciente>,
   ) {}
 
-  async create(createPacienteDTO: CreatePacienteDTO): Promise<ResultadoDto> {
-    const novoPaciente = new Paciente();
-    Object.assign(novoPaciente, createPacienteDTO);
+  async create(
+    createPacienteDTO: CreatePacienteDTO,
+  ): Promise<CreatePacienteDTO> {
+    try {
+      createPacienteDTO.cpf = removeSpecialChars(createPacienteDTO.cpf);
+      console.log(createPacienteDTO.cpf);
+      const novoPaciente = new Paciente();
+      Object.assign(novoPaciente, createPacienteDTO);
 
-    return this.pacienteRepository
-      .save(novoPaciente)
-      .then(() => {
-        return <ResultadoDto>{
-          status: true,
-          mensagem: 'Paciente cadastrado com sucesso',
-        };
-      })
-      .catch((error) => {
-        return <ResultadoDto>{
-          status: false,
-          mensagem: 'Erro ao cadastrar paciente',
-        };
-      });
+      const cpfExisting = await this.findWithCPF(createPacienteDTO.cpf);
+
+      if (cpfExisting) {
+        throw new Error(`Document ${cpfExisting.cpf} in use!`);
+      }
+
+      return this.pacienteRepository.save(novoPaciente);
+    } catch (error) {
+      console.error(error.message, error);
+      throw new InternalServerErrorException(error.message, error);
+    }
   }
 
   async findAll(): Promise<Paciente[]> {
@@ -38,6 +45,14 @@ export class PacienteService {
 
   async findOne(id: number): Promise<Paciente> {
     return this.pacienteRepository.findOne({ where: { id } });
+  }
+
+  async findWithCPF(documentNumber: string) {
+    const customer = await this.pacienteRepository.findOne({
+      where: { cpf: documentNumber },
+    });
+
+    return customer;
   }
 
   async update(

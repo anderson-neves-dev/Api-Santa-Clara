@@ -6,9 +6,8 @@ export class Paciente {
   id: number;
 
   @Column({
-    type: 'varchar',
+    type: 'char',
     length: 11,
-    unique: true,
   })
   cpf: string;
 
@@ -22,4 +21,7 @@ export class Paciente {
     type: 'date',
   })
   data_nascimento: Date;
+
+  @Column({ type: 'varchar', length: 100 })
+  email: string;
 }

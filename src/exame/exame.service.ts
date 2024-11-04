@@ -13,22 +13,9 @@ export class ExameService {
     private exameRepository: Repository<Exame>,
   ) {}
 
-  async create(exame: CreateExameDto): Promise<ResultadoDto> {
-    let novoExame = new Exame(exame);
-    return this.exameRepository
-      .save(novoExame)
-      .then((result) => {
-        return <ResultadoDto>{
-          status: true,
-          mensagem: 'Exame cadastrado com suceso',
-        };
-      })
-      .catch((error) => {
-        return <ResultadoDto>{
-          status: false,
-          mensagem: 'Houve um erro ao cadastrar um exame',
-        };
-      });
+  async create(exame: CreateExameDto) {
+    const novoExame = new Exame(exame);
+    return this.exameRepository.save(novoExame);
   }
 
   async findAll(): Promise<Exame[]> {
