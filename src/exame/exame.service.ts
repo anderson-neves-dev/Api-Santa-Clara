@@ -5,6 +5,8 @@ import { CreateExameDto } from './dto/create-exame.dto';
 import { ResultadoDto } from 'src/dto/resultado.dto';
 import { error } from 'console';
 import { UpdateExameDto } from './dto/update-exame.dto';
+import { throws } from 'assert';
+import { InternalServerErrorException } from '@nestjs/common';	
 
 @Injectable()
 export class ExameService {
@@ -14,8 +16,25 @@ export class ExameService {
   ) {}
 
   async create(exame: CreateExameDto) {
+    try{
+
+    
     const novoExame = new Exame(exame);
+
+    const examExists = await this.exameRepository.findOne({
+      where: { specialty: novoExame.specialty },
+    });
+
+    console.log(examExists);
+
+    if(examExists) {
+      throw new Error('Exam already exists');
+    }
     return this.exameRepository.save(novoExame);
+  }catch(error){
+    throw new InternalServerErrorException(error.message, error);
+
+  }
   }
 
   async findAll(): Promise<Exame[]> {
