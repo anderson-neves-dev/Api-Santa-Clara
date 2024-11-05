@@ -33,7 +33,7 @@ export class Paciente {
 
   @Column({ type: 'varchar', length: 100 })
   street: string;
-  
+
   @Column({ type: 'varchar', length: 20 })
   number: string;
 
@@ -43,9 +43,13 @@ export class Paciente {
   @Column({ type: 'varchar', length: 100 })
   neighborhood: string;
 
-  @Column({ type: 'varchar', length: 100 }) 
+  @Column({ type: 'varchar', length: 100 })
   city: string;
 
   @Column({ type: 'varchar', length: 2 })
   state: string;
+
+  constructor(init?: Partial<Paciente>) {
+    Object.assign(this, init);
+  }
 }

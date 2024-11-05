@@ -64,8 +64,61 @@ export class PacienteService {
     id: number,
     updatePacienteDTO: UpdatePacienteDTO,
   ): Promise<Paciente> {
-    await this.pacienteRepository.update(id, updatePacienteDTO);
-    return this.pacienteRepository.findOne({ where: { id } });
+    try {
+      const pacienteExistente = await this.findOne(id);
+
+      if (!pacienteExistente) {
+        throw new CustomError('Paciente com id informado não cadastrado');
+      }
+
+      // Normaliza CPF e CEP apenas se estiverem presentes
+      const cpfNormalizado = updatePacienteDTO.cpf
+        ? removeSpecialChars(updatePacienteDTO.cpf)
+        : pacienteExistente.cpf;
+      const cepNormalizado = updatePacienteDTO.cep
+        ? removeSpecialChars(updatePacienteDTO.cep)
+        : pacienteExistente.cep;
+
+      // Filtra os campos vazios e mantém os valores existentes ou `null`
+      const dataParaAtualizacao = {
+        cpf: cpfNormalizado,
+        cep: cepNormalizado,
+        dateBirthday:
+          updatePacienteDTO.dateBirthday || pacienteExistente.dateBirthday,
+        name: updatePacienteDTO.name || pacienteExistente.name,
+        phoneNumber:
+          updatePacienteDTO.phoneNumber || pacienteExistente.phoneNumber,
+        street: updatePacienteDTO.street || pacienteExistente.street,
+        number: updatePacienteDTO.number || pacienteExistente.number,
+        complement:
+          updatePacienteDTO.complement || pacienteExistente.complement,
+        neighborhood:
+          updatePacienteDTO.neighborhood || pacienteExistente.neighborhood,
+        city: updatePacienteDTO.city || pacienteExistente.city,
+        state: updatePacienteDTO.state || pacienteExistente.state,
+        email: updatePacienteDTO.email || pacienteExistente.email,
+      };
+
+      // Verifica duplicidade de CPF
+      if (
+        dataParaAtualizacao.cpf &&
+        dataParaAtualizacao.cpf !== pacienteExistente.cpf
+      ) {
+        const cpfExisting = await this.findWithCPF(dataParaAtualizacao.cpf);
+        if (cpfExisting) {
+          throw new CustomError(
+            `O CPF ${cpfExisting.cpf} já está cadastrado`,
+            'cpf',
+          );
+        }
+      }
+
+      await this.pacienteRepository.update(id, dataParaAtualizacao);
+      return this.findOne(id);
+    } catch (error) {
+      console.error(error.message, error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
   async delete(id: number): Promise<void> {

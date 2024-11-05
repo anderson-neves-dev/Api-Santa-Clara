@@ -1,19 +1,115 @@
+import { UnprocessableEntityException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsDate,
+  IsEmail,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
+import { cpf } from 'cpf-cnpj-validator';
+import { removeSpecialChars } from 'src/shareds/helpers';
 
 export class UpdatePacienteDTO {
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Paciente CPF',
+    example: '123.456.789-00',
+  })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Document number must be a string.' })
+  @Transform(({ value }) => {
+    if (!value) {
+      return undefined; // Retorna undefined se o valor estiver vazio
+    }
+    const document = removeSpecialChars(value).replace(/\s+/g, '');
+    if (document.length === 11) {
+      if (!cpf.isValid(document)) {
+        throw new UnprocessableEntityException('The CPF is invalid.');
+      }
+    } else {
+      throw new UnprocessableEntityException(
+        'The document provided is not a valid CPF.',
+      );
+    }
+    return document;
+  })
   cpf?: string;
 
   @ApiProperty()
   @IsOptional()
   @IsString()
-  nome?: string;
+  @Transform(({ value }) => (value ? value : undefined)) // Transforma string vazia para undefined
+  name?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @Transform(({ value }) => (value ? new Date(value) : undefined), {
+    toClassOnly: true,
+  }) // Transforma string para Date ou undefined
+  dateBirthday?: Date;
+
+  @ApiProperty({ example: 'jon@gmail.com' })
+  @IsOptional()
+  @IsEmail()
+  @Transform(({ value }) => (value ? value : undefined))
+  email?: string;
 
   @ApiProperty()
   @IsOptional()
   @IsString()
-  data_nascimento?: Date;
+  @MaxLength(11)
+  @Transform(({ value }) => (value ? value : undefined)) // Transforma string vazia para undefined
+  phoneNumber?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) =>
+    value ? removeSpecialChars(value).replace(/\s+/g, '') : undefined,
+  ) // Transforma string vazia para undefined
+  @MaxLength(8)
+  cep?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  @Transform(({ value }) => (value ? value : undefined))
+  street?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @MaxLength(20)
+  @Transform(({ value }) => (value ? value : undefined))
+  number?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  @Transform(({ value }) => (value ? value : undefined))
+  complement?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  @Transform(({ value }) => (value ? value : undefined))
+  neighborhood?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  @Transform(({ value }) => (value ? value : undefined))
+  city?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  @MaxLength(2)
+  @Transform(({ value }) => (value ? value : undefined))
+  state?: string;
 }
