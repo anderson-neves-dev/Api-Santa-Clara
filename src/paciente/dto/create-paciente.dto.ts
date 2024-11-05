@@ -60,15 +60,16 @@ export class CreatePacienteDTO {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  @MaxLength(100)
+  @Transform(({ value }) => removeSpecialChars(value).replace(/\s+/g, ''))
+  @MaxLength(8)
   cep: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  @MaxLength(100)  
+  @MaxLength(100)
   street: string;
-  
+
   @ApiProperty()
   @IsNotEmpty()
   @IsString()

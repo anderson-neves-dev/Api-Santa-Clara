@@ -9,6 +9,7 @@ import { Paciente } from './entities/paciente.entity';
 import { UpdatePacienteDTO } from './dto/update-paciente.dto';
 import { Repository } from 'typeorm';
 import { removeSpecialChars } from 'src/shareds/helpers';
+import { CustomError } from 'src/shareds/errors';
 
 @Injectable()
 export class PacienteService {
@@ -22,20 +23,24 @@ export class PacienteService {
   ): Promise<CreatePacienteDTO> {
     try {
       createPacienteDTO.cpf = removeSpecialChars(createPacienteDTO.cpf);
-      console.log(createPacienteDTO.cpf);
+      createPacienteDTO.cep = removeSpecialChars(createPacienteDTO.cep);
+      console.log(createPacienteDTO);
       const novoPaciente = new Paciente();
       Object.assign(novoPaciente, createPacienteDTO);
 
       const cpfExisting = await this.findWithCPF(createPacienteDTO.cpf);
 
       if (cpfExisting) {
-        throw new Error(`Document ${cpfExisting.cpf} in use!`);
+        throw new CustomError(
+          `O CPF ${cpfExisting.cpf} já está cadastrado`,
+          'cpf',
+        );
       }
 
       return this.pacienteRepository.save(novoPaciente);
     } catch (error) {
       console.error(error.message, error);
-      throw new InternalServerErrorException(error.message, error);
+      throw new InternalServerErrorException(error);
     }
   }
 
