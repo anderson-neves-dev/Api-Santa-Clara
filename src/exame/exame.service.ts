@@ -35,7 +35,7 @@ export class ExameService {
 
       return this.exameRepository.save(novoExame);
     } catch (error) {
-      throw new InternalServerErrorException(error.message);
+      throw new InternalServerErrorException(error);
     }
   }
 
