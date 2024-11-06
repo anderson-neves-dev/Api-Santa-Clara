@@ -28,10 +28,10 @@ export class CreatePacienteDTO {
       console.log(document);
       if (document.length === 11) {
         if (!cpf.isValid(document)) {
-          throw new CustomError('O CPF precisa conter 11 d´gitos', 'cpf');
+          throw new CustomError('O CPF informado é inválido', 'cpf');
         }
       } else {
-        throw new CustomError('O CPF informado é inválido', 'cpf');
+        throw new CustomError('O CPF precisa conter 11 dígitos', 'cpf');
       }
 
       return document;
