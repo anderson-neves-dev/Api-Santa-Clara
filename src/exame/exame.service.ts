@@ -1,4 +1,8 @@
-import { Injectable, Inject, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Exame } from './entities/exame.entity';
 import { CreateExameDto } from './dto/create-exame.dto';
@@ -54,6 +58,25 @@ export class ExameService {
       if (!examExists) {
         throw new CustomError(`Exame com id ${id} não existe`);
       }
+      if (
+        exameUpdate.specialty &&
+        examExists.specialty === exameUpdate.specialty
+      ) {
+        throw new CustomError(
+          `A especialidade informada já pertence esse exame`,
+          'specialty',
+        );
+      }
+
+      if (
+        exameUpdate.category &&
+        examExists.category === exameUpdate.category
+      ) {
+        throw new CustomError(
+          `O categoria informada já pertence esse exame`,
+          'category',
+        );
+      }
 
       examExists = await this.exameRepository.findOne({
         where: { specialty: novoExame.specialty },
@@ -61,6 +84,13 @@ export class ExameService {
 
       if (examExists) {
         throw new CustomError('Exame já está cadastrado', 'specialty');
+      }
+
+      if (exameUpdate && examExists.category === exameUpdate.category) {
+        throw new CustomError(
+          `O categoria informada já pertence esse exame`,
+          'category',
+        );
       }
       await this.exameRepository.update(id, exameUpdate);
 

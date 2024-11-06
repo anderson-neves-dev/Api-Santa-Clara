@@ -9,6 +9,7 @@ import {
   MaxLength,
 } from 'class-validator';
 import { cpf } from 'cpf-cnpj-validator';
+import { CustomError } from 'src/shareds/errors';
 import { removeSpecialChars } from 'src/shareds/helpers';
 
 export class CreatePacienteDTO {
@@ -23,11 +24,12 @@ export class CreatePacienteDTO {
     console.log(document);
     if (document.length === 11) {
       if (!cpf.isValid(document)) {
-        throw new UnprocessableEntityException('The CPF is invalid.');
+        throw new CustomError('The CPF is invalid.', 'cpf');
       }
     } else {
-      throw new UnprocessableEntityException(
+      throw new CustomError(
         'The document provided is not a valid CPF .',
+        'cpf',
       );
     }
 
