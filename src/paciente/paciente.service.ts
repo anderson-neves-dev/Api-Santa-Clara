@@ -32,7 +32,7 @@ export class PacienteService {
 
       if (cpfExisting) {
         throw new CustomError(
-          `O CPF ${cpfExisting.cpf} já está cadastrado`,
+          `O CPF já está cadastrado`,
           'cpf',
         );
       }
@@ -115,7 +115,7 @@ export class PacienteService {
         const cpfExisting = await this.findWithCPF(dataParaAtualizacao.cpf);
         if (cpfExisting) {
           throw new CustomError(
-            `O CPF ${cpfExisting.cpf} já está cadastrado`,
+            `O CPF já está cadastrado`,
             'cpf',
           );
         }

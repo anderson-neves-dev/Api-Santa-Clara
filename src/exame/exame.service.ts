@@ -1,13 +1,12 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, InternalServerErrorException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Exame } from './entities/exame.entity';
 import { CreateExameDto } from './dto/create-exame.dto';
+import { UpdateExameDto } from './dto/update-exame.dto';
+import { CustomError } from 'src/shareds/errors';
 import { ResultadoDto } from 'src/dto/resultado.dto';
 import { error } from 'console';
-import { UpdateExameDto } from './dto/update-exame.dto';
 import { throws } from 'assert';
-import { InternalServerErrorException } from '@nestjs/common';
-import { CustomError } from 'src/shareds/errors';
 
 @Injectable()
 export class ExameService {
@@ -27,17 +26,19 @@ export class ExameService {
       console.log(examExists);
 
       if (examExists) {
-        throw new CustomError('Exam already exists', 'specialty');
+        throw new CustomError('Exame ja existe!', 'specialty');
       }
+
       return this.exameRepository.save(novoExame);
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
   async findAll(): Promise<Exame[]> {
     return this.exameRepository.find();
   }
+
   async findOne(id: number): Promise<Exame[]> {
     return this.exameRepository.find({ where: { id } });
   }
