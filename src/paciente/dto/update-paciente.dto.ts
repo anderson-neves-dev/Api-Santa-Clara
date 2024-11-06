@@ -1,4 +1,7 @@
-import { UnprocessableEntityException } from '@nestjs/common';
+import {
+  InternalServerErrorException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
@@ -20,18 +23,25 @@ export class UpdatePacienteDTO {
   @IsOptional()
   @IsString({ message: 'Document number must be a string.' })
   @Transform(({ value }) => {
-    if (!value) {
-      return undefined; // Retorna undefined se o valor estiver vazio
-    }
-    const document = removeSpecialChars(value).replace(/\s+/g, '');
-    if (document.length === 11) {
-      if (!cpf.isValid(document)) {
-        throw new CustomError('The CPF is invalid.', 'cpf');
+    try {
+      if (!value) {
+        return undefined; // Retorna undefined se o valor estiver vazio
       }
-    } else {
-      throw new CustomError('The document provided is not a valid CPF.', 'cpf');
+      const document = removeSpecialChars(value).replace(/\s+/g, '');
+      if (document.length === 11) {
+        if (!cpf.isValid(document)) {
+          throw new CustomError('The CPF is invalid.', 'cpf');
+        }
+      } else {
+        throw new CustomError(
+          'The document provided is not a valid CPF.',
+          'cpf',
+        );
+      }
+      return document;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
     }
-    return document;
   })
   cpf?: string;
 
