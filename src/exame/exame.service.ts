@@ -49,8 +49,6 @@ export class ExameService {
 
   async update(id: number, exameUpdate: UpdateExameDto) {
     try {
-      const novoExame = new Exame(exameUpdate);
-
       let examExists = await this.exameRepository.findOne({
         where: { id },
       });
@@ -58,44 +56,27 @@ export class ExameService {
       if (!examExists) {
         throw new CustomError(`Exame com id ${id} não existe`);
       }
-      if (
-        exameUpdate.specialty &&
-        examExists.specialty === exameUpdate.specialty
-      ) {
-        throw new CustomError(
-          `A especialidade informada já pertence esse exame`,
-          'specialty',
-        );
-      }
-
-      if (
-        exameUpdate.category &&
-        examExists.category === exameUpdate.category
-      ) {
-        throw new CustomError(
-          `O categoria informada já pertence esse exame`,
-          'category',
-        );
-      }
-
-      examExists = await this.exameRepository.findOne({
-        where: { specialty: novoExame.specialty },
+      const novoExame = new Exame({
+        category: exameUpdate.category || examExists.category,
+        specialty: exameUpdate.specialty || examExists.specialty,
       });
 
-      if (examExists) {
-        throw new CustomError('Exame já está cadastrado', 'specialty');
+      if (exameUpdate.specialty) {
+        examExists = await this.exameRepository.findOne({
+          where: { specialty: exameUpdate.specialty },
+        });
+
+        console.log(examExists);
+        if (examExists && examExists.id != id) {
+          throw new CustomError('Exame já está cadastrado', 'specialty');
+        }
       }
 
-      if (exameUpdate && examExists.category === exameUpdate.category) {
-        throw new CustomError(
-          `O categoria informada já pertence esse exame`,
-          'category',
-        );
-      }
-      await this.exameRepository.update(id, exameUpdate);
+      await this.exameRepository.update(id, novoExame);
 
       return this.exameRepository.findOne({ where: { id } });
     } catch (error) {
+      console.log(error.message);
       throw new InternalServerErrorException(error);
     }
   }

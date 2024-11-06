@@ -30,13 +30,10 @@ export class UpdatePacienteDTO {
       const document = removeSpecialChars(value).replace(/\s+/g, '');
       if (document.length === 11) {
         if (!cpf.isValid(document)) {
-          throw new CustomError('The CPF is invalid.', 'cpf');
+          throw new CustomError('O CPF precisa conter 11 d´gitos', 'cpf');
         }
       } else {
-        throw new CustomError(
-          'The document provided is not a valid CPF.',
-          'cpf',
-        );
+        throw new CustomError('O CPF informado é inválido', 'cpf');
       }
       return document;
     } catch (error) {
