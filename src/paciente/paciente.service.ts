@@ -36,6 +36,14 @@ export class PacienteService {
           'cpf',
         );
       }
+      const dateBirthday = new Date(createPacienteDTO.dateBirthday);
+
+      if (dateBirthday.getDate() >= Date.now()) {
+        throw new CustomError(
+          `A data de nascimento não pode ser uma data futura`,
+          'dateBirthday',
+        );
+      }
 
       return this.pacienteRepository.save(novoPaciente);
     } catch (error) {
