@@ -31,14 +31,11 @@ export class PacienteService {
       const cpfExisting = await this.findWithCPF(createPacienteDTO.cpf);
 
       if (cpfExisting) {
-        throw new CustomError(
-          `O CPF já está cadastrado`,
-          'cpf',
-        );
+        throw new CustomError(`O CPF já está cadastrado`, 'cpf');
       }
       const dateBirthday = new Date(createPacienteDTO.dateBirthday);
 
-      if (dateBirthday.getDate() >= Date.now()) {
+      if (dateBirthday.getTime() >= Date.now()) {
         throw new CustomError(
           `A data de nascimento não pode ser uma data futura`,
           'dateBirthday',
@@ -114,10 +111,7 @@ export class PacienteService {
       ) {
         const cpfExisting = await this.findWithCPF(dataParaAtualizacao.cpf);
         if (cpfExisting) {
-          throw new CustomError(
-            `O CPF já está cadastrado`,
-            'cpf',
-          );
+          throw new CustomError(`O CPF já está cadastrado`, 'cpf');
         }
       }
 
