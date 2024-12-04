@@ -3,7 +3,6 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { ResultadoDto } from 'src/dto/resultado.dto';
 import { CreatePacienteDTO } from './dto/create-paciente.dto';
 import { Paciente } from './entities/paciente.entity';
 import { UpdatePacienteDTO } from './dto/update-paciente.dto';

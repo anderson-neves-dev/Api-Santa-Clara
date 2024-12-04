@@ -6,12 +6,14 @@ import { ExameController } from './exame/exame.controller';
 import { ExameService } from './exame/exame.service';
 import { ConfigModule } from '@nestjs/config';
 import { PacienteModule } from './paciente/paciente.module';
+import { DoctorModule } from './doctor/doctor.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ExameModule,
     PacienteModule,
+    DoctorModule,
   ],
   controllers: [AppController],
   providers: [AppService],
