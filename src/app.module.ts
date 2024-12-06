@@ -7,6 +7,7 @@ import { ExameService } from './exame/exame.service';
 import { ConfigModule } from '@nestjs/config';
 import { PacienteModule } from './paciente/paciente.module';
 import { DoctorModule } from './doctor/doctor.module';
+import { EnterpriseModule } from './enterprise/enterprise.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { DoctorModule } from './doctor/doctor.module';
     ExameModule,
     PacienteModule,
     DoctorModule,
+    EnterpriseModule,
   ],
   controllers: [AppController],
   providers: [AppService],

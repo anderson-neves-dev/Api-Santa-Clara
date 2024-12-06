@@ -8,9 +8,6 @@ import { Exame } from './entities/exame.entity';
 import { CreateExameDto } from './dto/create-exame.dto';
 import { UpdateExameDto } from './dto/update-exame.dto';
 import { CustomError } from 'src/shareds/errors';
-import { ResultadoDto } from 'src/dto/resultado.dto';
-import { error } from 'console';
-import { throws } from 'assert';
 
 @Injectable()
 export class ExameService {
