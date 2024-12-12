@@ -60,11 +60,14 @@ export class PacienteService {
   }
 
   async findAll(): Promise<Paciente[]> {
-    return this.pacienteRepository.find();
+    return this.pacienteRepository.find({ relations: ['enterprise'] });
   }
 
   async findOne(id: number): Promise<Paciente> {
-    return this.pacienteRepository.findOne({ where: { id } });
+    return this.pacienteRepository.findOne({
+      where: { id },
+      relations: ['enterprise'],
+    });
   }
 
   async findWithCPF(documentNumber: string) {
