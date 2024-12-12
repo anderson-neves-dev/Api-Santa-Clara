@@ -6,26 +6,23 @@ import {
 import { CreatePacienteDTO } from './dto/create-paciente.dto';
 import { Paciente } from './entities/paciente.entity';
 import { UpdatePacienteDTO } from './dto/update-paciente.dto';
-import { Repository } from 'typeorm';
 import { removeSpecialChars } from 'src/shareds/helpers';
 import { CustomError } from 'src/shareds/errors';
-
+import { EnterpriseService } from 'src/enterprise/enterprise.service';
+import { Repository } from 'typeorm';
 @Injectable()
 export class PacienteService {
   constructor(
     @Inject('PACIENTE_REPOSITORY')
     private pacienteRepository: Repository<Paciente>,
+    private readonly enterpriseService: EnterpriseService,
   ) {}
 
-  async create(
-    createPacienteDTO: CreatePacienteDTO,
-  ): Promise<CreatePacienteDTO> {
+  async create(createPacienteDTO: CreatePacienteDTO): Promise<Paciente> {
     try {
       createPacienteDTO.cpf = removeSpecialChars(createPacienteDTO.cpf);
       createPacienteDTO.cep = removeSpecialChars(createPacienteDTO.cep);
       console.log(createPacienteDTO);
-      const novoPaciente = new Paciente();
-      Object.assign(novoPaciente, createPacienteDTO);
 
       const cpfExisting = await this.findWithCPF(createPacienteDTO.cpf);
 
@@ -41,6 +38,20 @@ export class PacienteService {
         );
       }
 
+      const enterprise = await this.enterpriseService.findOne(
+        createPacienteDTO.id_enterprise,
+      );
+
+      if (!enterprise) {
+        throw new CustomError(
+          `A empresa informada não está cadastrada`,
+          'id_enterprise',
+        );
+      }
+
+      const novoPaciente = new Paciente(createPacienteDTO);
+
+      novoPaciente.enterprise = enterprise;
       return this.pacienteRepository.save(novoPaciente);
     } catch (error) {
       console.error(error.message, error);
@@ -83,6 +94,17 @@ export class PacienteService {
         ? removeSpecialChars(updatePacienteDTO.cep)
         : pacienteExistente.cep;
 
+      const enterprise = updatePacienteDTO.id_enterprise
+        ? await this.enterpriseService.findOne(updatePacienteDTO.id_enterprise)
+        : null;
+
+      if (updatePacienteDTO.id_enterprise && !enterprise) {
+        throw new CustomError(
+          `A empresa informada não está cadastrada`,
+          'id_enterprise',
+        );
+      }
+
       // Filtra os campos vazios e mantém os valores existentes ou `null`
       const dataParaAtualizacao = {
         cpf: cpfNormalizado,
@@ -101,6 +123,7 @@ export class PacienteService {
         city: updatePacienteDTO.city || pacienteExistente.city,
         state: updatePacienteDTO.state || pacienteExistente.state,
         email: updatePacienteDTO.email || pacienteExistente.email,
+        enterprise: enterprise || pacienteExistente.enterprise,
       };
 
       // Verifica duplicidade de CPF

@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Paciente } from 'src/paciente/entities/paciente.entity';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('enterprise')
 export class Enterprise {
@@ -43,6 +50,9 @@ export class Enterprise {
 
   @Column({ type: 'varchar', length: 2 })
   state: string;
+
+  @OneToMany(() => Paciente, (patient) => patient.enterprise)
+  patient: Paciente[];
 
   constructor(init?: Partial<Enterprise>) {
     Object.assign(this, init);

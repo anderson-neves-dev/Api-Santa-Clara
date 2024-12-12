@@ -8,6 +8,7 @@ import {
   IsDate,
   IsEmail,
   IsNotEmpty,
+  IsNumber,
   IsString,
   MaxLength,
 } from 'class-validator';
@@ -105,4 +106,9 @@ export class CreatePacienteDTO {
   @IsString()
   @MaxLength(2)
   state: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  id_enterprise: number;
 }

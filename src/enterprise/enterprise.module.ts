@@ -9,5 +9,6 @@ import { enterpriseProviders } from './entities/enterprise.provider';
   imports: [DatabaseModule],
   controllers: [EnterpriseController],
   providers: [...enterpriseProviders, EnterpriseService],
+  exports: [EnterpriseService],
 })
 export class EnterpriseModule {}

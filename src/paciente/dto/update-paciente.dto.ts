@@ -7,6 +7,7 @@ import { Transform } from 'class-transformer';
 import {
   IsDate,
   IsEmail,
+  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
@@ -118,4 +119,9 @@ export class UpdatePacienteDTO {
   @MaxLength(2)
   @Transform(({ value }) => (value ? value : undefined))
   state?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumber()
+  id_enterprise?: number;
 }
