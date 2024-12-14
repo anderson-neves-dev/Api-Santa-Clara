@@ -1,0 +1,5 @@
+export enum TypeExam {
+  ADMISSION = 'ADMISSION',
+  PERIODIC = 'PERIODIC',
+  DISMISSAL = 'DISMISSAL',
+}

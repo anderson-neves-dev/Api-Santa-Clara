@@ -1,5 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { PerformedExam } from './performed-exam.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { PerformedExam } from '../../performed_exams/entities/performed-exam.entity';
 
 @Entity()
 export class Exame {
@@ -12,8 +18,8 @@ export class Exame {
   @Column({ type: 'varchar', length: 100 })
   category: string;
 
-  @ManyToOne(() => PerformedExam, (performedExams) => performedExams.exam)
-  performedExams: PerformedExam[];  
+  @OneToMany(() => PerformedExam, (performedExams) => performedExams.exam)
+  performedExams: PerformedExam[];
 
   constructor(init?: Partial<Exame>) {
     Object.assign(this, init);

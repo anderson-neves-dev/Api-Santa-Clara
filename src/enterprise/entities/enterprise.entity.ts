@@ -1,3 +1,4 @@
+import { Scheduling } from 'src/agendamento/entites/scheduling.entity';
 import { Paciente } from 'src/paciente/entities/paciente.entity';
 import {
   Column,
@@ -53,6 +54,9 @@ export class Enterprise {
 
   @OneToMany(() => Paciente, (patient) => patient.enterprise)
   patient: Paciente[];
+
+  @OneToMany(() => Scheduling, (scheduling) => scheduling.enterprise)
+  scheduling: Scheduling[];
 
   constructor(init?: Partial<Enterprise>) {
     Object.assign(this, init);

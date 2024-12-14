@@ -1,9 +1,11 @@
+import { Scheduling } from 'src/agendamento/entites/scheduling.entity';
 import { Enterprise } from 'src/enterprise/entities/enterprise.entity';
 import {
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -61,6 +63,9 @@ export class Paciente {
   })
   @JoinColumn({ name: 'id_enterprise', referencedColumnName: 'id' })
   enterprise: Enterprise;
+
+  @OneToMany(() => Scheduling, (scheduling) => scheduling.patient)
+  scheduling: Scheduling[];
 
   constructor(init?: Partial<Paciente>) {
     Object.assign(this, init);

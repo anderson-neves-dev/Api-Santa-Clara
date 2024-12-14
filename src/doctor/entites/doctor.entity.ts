@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Scheduling } from 'src/agendamento/entites/scheduling.entity';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('doctor')
 export class Doctor {
@@ -17,6 +24,9 @@ export class Doctor {
 
   @Column({ type: 'varchar', length: 50 })
   email: string;
+
+  @OneToMany(() => Scheduling, (scheduling) => scheduling.doctor)
+  scheduling: Scheduling[];
 
   constructor(init?: Partial<Doctor>) {
     Object.assign(this, init);
