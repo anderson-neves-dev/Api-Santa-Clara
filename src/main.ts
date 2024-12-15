@@ -16,13 +16,13 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   app.enableCors({
-    origin: 'http://localhost:3001', // Substitua pela URL do seu frontend
+    origin: 'http://localhost:3000', // Substitua pela URL do seu frontend
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
 
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(3000);
+  await app.listen(8080);
 }
 bootstrap();

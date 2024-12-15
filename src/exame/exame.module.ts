@@ -9,5 +9,6 @@ import { ConfigModule } from '@nestjs/config';
   imports: [ConfigModule.forRoot(), DatabaseModule],
   controllers: [ExameController],
   providers: [...exameProviders, ExameService],
+  exports: [ExameService], // Exporte o serviço para outros módulos
 })
 export class ExameModule {}

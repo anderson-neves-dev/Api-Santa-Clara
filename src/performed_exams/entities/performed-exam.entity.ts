@@ -20,4 +20,8 @@ export class PerformedExam {
 
   @Column({ type: 'varchar', length: 150, nullable: true })
   laboratoryResultUrl: string; // Corrigido o nome para seguir o padrão camelCase
+
+  constructor(init?: Partial<PerformedExam>) {
+    Object.assign(this, init);
+  }
 }

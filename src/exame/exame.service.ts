@@ -3,7 +3,7 @@ import {
   Inject,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { Exame } from './entities/exame.entity';
 import { CreateExameDto } from './dto/create-exame.dto';
 import { UpdateExameDto } from './dto/update-exame.dto';
@@ -40,8 +40,8 @@ export class ExameService {
     return this.exameRepository.find();
   }
 
-  async findOne(id: number): Promise<Exame[]> {
-    return this.exameRepository.find({ where: { id } });
+  async findOne(id: number): Promise<Exame> {
+    return this.exameRepository.findOne({ where: { id } });
   }
 
   async update(id: number, exameUpdate: UpdateExameDto) {

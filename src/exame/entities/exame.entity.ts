@@ -18,7 +18,9 @@ export class Exame {
   @Column({ type: 'varchar', length: 100 })
   category: string;
 
-  @OneToMany(() => PerformedExam, (performedExams) => performedExams.exam)
+  @OneToMany(() => PerformedExam, (performedExams) => performedExams.exam, {
+    cascade: true,
+  })
   performedExams: PerformedExam[];
 
   constructor(init?: Partial<Exame>) {

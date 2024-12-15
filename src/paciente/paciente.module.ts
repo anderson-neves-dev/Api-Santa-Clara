@@ -9,5 +9,6 @@ import { EnterpriseModule } from 'src/enterprise/enterprise.module';
   imports: [DatabaseModule, EnterpriseModule],
   controllers: [PacienteController],
   providers: [...pacienteProviders, PacienteService],
+  exports: [PacienteService], // Exporte o serviço para que outros módulos possam usá-lo
 })
 export class PacienteModule {}

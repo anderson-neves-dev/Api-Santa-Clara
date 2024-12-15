@@ -76,4 +76,8 @@ export class Scheduling {
     { cascade: true, nullable: true },
   )
   performedExams: PerformedExam[];
+
+  constructor(init?: Partial<Scheduling>) {
+    Object.assign(this, init);
+  }
 }
