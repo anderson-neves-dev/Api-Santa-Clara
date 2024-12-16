@@ -68,6 +68,7 @@ export class SchedulingService {
         patient: patient,
         doctor: doctor,
         status: SchedulingStatus.AGENDADO,
+        tipoExame: createSchedulingDTO.tipoExame,
       });
 
       const scheduling = await this.schedulingRepository.save(newScheduling);
