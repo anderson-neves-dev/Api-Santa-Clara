@@ -12,6 +12,7 @@ import {
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SchedulingService } from './scheduling.service';
 import { CreateSchedulingDTO } from './dto/create-scheduling.dto';
+import { UpdateSchedulingDTO } from './dto/update-scheduling.dto';
 
 @ApiTags('Scheduling')
 @Controller('scheduling')
@@ -36,5 +37,18 @@ export class SchedulingController {
   @Get()
   async findAll() {
     return this.schedulingService.findAll();
+  }
+
+  @Put('/:id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateScheduling: UpdateSchedulingDTO,
+  ) {
+    return this.schedulingService.update(id, updateScheduling);
+  }
+
+  @Delete('/:id')
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.schedulingService.delete(id);
   }
 }

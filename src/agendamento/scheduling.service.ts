@@ -12,6 +12,9 @@ import { CustomError } from 'src/shareds/errors';
 import { ExameService } from 'src/exame/exame.service';
 import { SchedulingStatus } from 'src/shareds/enum/scheduling-status.enum';
 import { PerformedExam } from 'src/performed_exams/entities/performed-exam.entity';
+import { UpdateSchedulingDTO } from './dto/update-scheduling.dto';
+import { DoctorService } from 'src/doctor/doctor.service';
+import { isEmpty, isNotEmpty } from 'class-validator';
 @Injectable()
 export class SchedulingService {
   constructor(
@@ -20,6 +23,7 @@ export class SchedulingService {
     private readonly enterpriseService: EnterpriseService,
     private readonly patientService: PacienteService,
     private readonly examService: ExameService,
+    private readonly doctorService: DoctorService,
 
     @Inject('PERFORMED_EXAM_REPOSITORY')
     private performedExamRepository: Repository<PerformedExam>,
@@ -40,6 +44,13 @@ export class SchedulingService {
         throw new CustomError('Empresa informado não está cadastrado');
       }
 
+      const doctor = await this.doctorService.findOne(
+        createSchedulingDTO.id_doctor,
+      );
+      if (!doctor) {
+        throw new CustomError('Médico informado não está cadastrado');
+      }
+
       for (const examId of createSchedulingDTO.exams) {
         console.log(examId);
         let examExisting = await this.examService.findOne(examId);
@@ -55,6 +66,7 @@ export class SchedulingService {
         dataAgendamento: new Date(createSchedulingDTO.dataAgendamento),
         enterprise: enterprise,
         patient: patient,
+        doctor: doctor,
         status: SchedulingStatus.AGENDADO,
       });
 
@@ -88,6 +100,7 @@ export class SchedulingService {
       .createQueryBuilder('scheduling')
       .leftJoinAndSelect('scheduling.patient', 'patient')
       .leftJoinAndSelect('scheduling.enterprise', 'enterprise')
+      .leftJoinAndSelect('scheduling.doctor', 'doctor')
       .leftJoinAndSelect('scheduling.performedExams', 'performedExams')
       .leftJoinAndSelect('performedExams.exam', 'exam') // Inclui o relacionamento com os detalhes do exame.
       .where('scheduling.id = :id', { id }) // Busca o agendamento com o ID fornecido.
@@ -113,7 +126,9 @@ export class SchedulingService {
       parecer: scheduling.parecer,
       patient: scheduling.patient,
       enterprise: scheduling.enterprise,
+      doctor: scheduling.doctor,
       performedExams: scheduling.performedExams.map((exam) => ({
+        id_exam: exam.exam?.id || null,
         specialty: exam.exam?.specialty || null, // Adiciona specialty ao resultado.
         category: exam.exam?.category || null,
         laboratoryResultUrl: exam.laboratoryResultUrl,
@@ -126,6 +141,7 @@ export class SchedulingService {
       .createQueryBuilder('scheduling')
       .leftJoinAndSelect('scheduling.patient', 'patient')
       .leftJoinAndSelect('scheduling.enterprise', 'enterprise')
+      .leftJoinAndSelect('scheduling.doctor', 'doctor')
       .leftJoinAndSelect('scheduling.performedExams', 'performedExams')
       .leftJoinAndSelect('performedExams.exam', 'exam') // Inclui o relacionamento com os detalhes do exame.
       .getMany();
@@ -143,11 +159,139 @@ export class SchedulingService {
       parecer: scheduling.parecer,
       patient: scheduling.patient,
       enterprise: scheduling.enterprise,
+      doctor: scheduling.doctor,
       performedExams: scheduling.performedExams.map((exam) => ({
+        id_exam: exam.exam?.id || null,
         specialty: exam.exam?.specialty || null, // Adiciona specialty ao resultado.
         category: exam.exam?.category || null,
         laboratoryResultUrl: exam.laboratoryResultUrl,
       })),
     }));
+  }
+
+  async update(
+    id: number,
+    updateSchedulingDTO: UpdateSchedulingDTO,
+  ): Promise<any> {
+    const schedulingExisting = await this.findOne(id);
+
+    if (!schedulingExisting) {
+      throw new CustomError('Agendamento não cadastrado');
+    }
+
+    let patient = null;
+    if (updateSchedulingDTO.id_patient) {
+      patient = await this.patientService.findOne(
+        updateSchedulingDTO.id_patient,
+      );
+
+      if (!patient) {
+        throw new CustomError('Paciente com id informado não cadastrado');
+      }
+    }
+
+    let enterprise = null;
+    if (updateSchedulingDTO.id_enterprise) {
+      enterprise = await this.enterpriseService.findOne(
+        updateSchedulingDTO.id_enterprise,
+      );
+
+      if (!enterprise) {
+        throw new CustomError('Empresa com id informado não cadastrado');
+      }
+    }
+    let doctor = null;
+    if (updateSchedulingDTO.id_doctor) {
+      doctor = await this.doctorService.findOne(updateSchedulingDTO.id_doctor);
+
+      if (!doctor) {
+        throw new CustomError('Médico com id informado não cadastrado');
+      }
+    }
+
+    let dataRealizacaoExame = null;
+    if (updateSchedulingDTO.parecer) {
+      updateSchedulingDTO.status = SchedulingStatus.FINALIZADO;
+      dataRealizacaoExame = new Date(Date.now());
+    }
+
+    if (updateSchedulingDTO.exams.length > 0) {
+      const performedExamsScheduling = schedulingExisting.performedExams.map(
+        (exam) => exam.id_exam,
+      );
+
+      const examesParaAdicionar = updateSchedulingDTO.exams.filter(
+        (item) => !performedExamsScheduling.includes(Number(item)),
+      );
+
+      if (isNotEmpty(examesParaAdicionar)) {
+        console.log('passouaqui');
+        for (const examId of examesParaAdicionar) {
+          let examExisting = await this.examService.findOne(Number(examId));
+          const newPerformedExam = new PerformedExam({
+            exam: examExisting,
+            scheduling: await this.schedulingRepository.findOne({
+              where: { id },
+            }),
+            id_exam: examExisting.id,
+            id_scheduling: id,
+          });
+
+          const newPerformedExamSave =
+            await this.performedExamRepository.save(newPerformedExam);
+        }
+      }
+
+      const examesParaRemover = performedExamsScheduling.filter(
+        (item) => !updateSchedulingDTO.exams.map(Number).includes(item),
+      );
+
+      for (const examId of examesParaRemover) {
+        await this.performedExamRepository.delete({
+          id_exam: Number(examId),
+          id_scheduling: id,
+        });
+      }
+    }
+
+    if (isNotEmpty(updateSchedulingDTO.updatePerfomedExamDTO)) {
+      for (const exam of updateSchedulingDTO.updatePerfomedExamDTO) {
+        const examesRealizadosAtualizados =
+          await this.performedExamRepository.update(
+            { id_exam: exam.id_exam, id_scheduling: id },
+            {
+              id_scheduling: id,
+              id_exam: exam.id_exam,
+              laboratoryResultUrl: exam.laboratoryResultUrl,
+            },
+          );
+        console.log('Url atualizada', examesRealizadosAtualizados);
+      }
+    }
+
+    const schedulingUpdate = new Scheduling({
+      dataAgendamento: updateSchedulingDTO.dataAgendamento
+        ? new Date(updateSchedulingDTO.dataAgendamento)
+        : schedulingExisting.dataAgendamento,
+      dataRealizacaoExame:
+        dataRealizacaoExame || schedulingExisting.dataRealizacaoExame,
+      dataAvaliacao: updateSchedulingDTO.dataAvaliacao
+        ? new Date(updateSchedulingDTO.dataAvaliacao)
+        : schedulingExisting.dataAvaliacao,
+      observacoes:
+        updateSchedulingDTO.observacoes || schedulingExisting.observacoes,
+      parecer: updateSchedulingDTO.parecer || schedulingExisting.parecer,
+      tipoExame: updateSchedulingDTO.tipoExame || schedulingExisting.tipoExame,
+      status: updateSchedulingDTO.status || schedulingExisting.status,
+      doctor: doctor || schedulingExisting.doctor,
+      patient: patient || schedulingExisting.patient,
+      enterprise: enterprise || schedulingExisting.enterprise,
+    });
+
+    return await this.schedulingRepository.update(id, schedulingUpdate);
+  }
+
+  async delete(id: number): Promise<void> {
+    await this.schedulingRepository.delete(id);
   }
 }

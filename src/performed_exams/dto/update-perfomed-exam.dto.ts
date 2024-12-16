@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class CreatePerfomedExamDTO {
+export class UpdatePerfomedExamDTO {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
@@ -9,6 +9,6 @@ export class CreatePerfomedExamDTO {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
-  id_scheduling: number;
+  @IsString()
+  laboratoryResultUrl: string;
 }

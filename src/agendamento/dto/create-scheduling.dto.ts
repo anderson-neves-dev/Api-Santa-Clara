@@ -43,6 +43,11 @@ export class CreateSchedulingDTO {
 
   @ApiProperty()
   @IsNotEmpty()
+  @IsNumber()
+  id_doctor: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
   @IsArray()
   exams: number[];
 }

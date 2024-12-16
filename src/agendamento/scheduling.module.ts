@@ -17,6 +17,7 @@ import { performedExamProviders } from 'src/performed_exams/entities/performed-e
     PacienteModule,
     DoctorModule,
     ExameModule,
+    DoctorModule,
   ],
   controllers: [SchedulingController],
   providers: [
