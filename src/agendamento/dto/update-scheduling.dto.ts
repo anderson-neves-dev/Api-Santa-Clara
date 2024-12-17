@@ -20,13 +20,12 @@ import { TypeExam } from 'src/shareds/enum/type-exam.enum';
 export class UpdateSchedulingDTO {
   @ApiProperty()
   @IsOptional()
-  @Transform(({ value }) => (value ? value : undefined))
-  @IsDate()
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
   dataAgendamento?: Date;
 
   @ApiProperty()
   @IsOptional()
-  @Transform(({ value }) => (value ? value : undefined))
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
   @IsDate()
   dataAvaliacao?: Date;
 
