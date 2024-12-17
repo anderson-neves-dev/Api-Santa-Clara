@@ -7,6 +7,7 @@ import { PacienteModule } from './paciente/paciente.module';
 import { DoctorModule } from './doctor/doctor.module';
 import { EnterpriseModule } from './enterprise/enterprise.module';
 import { SchedulingModule } from './agendamento/scheduling.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { SchedulingModule } from './agendamento/scheduling.module';
     DoctorModule,
     EnterpriseModule,
     SchedulingModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
