@@ -29,6 +29,20 @@ export class SchedulingController {
     return this.schedulingService.create(createSchedulingDTO);
   }
 
+  @Get('/countExamsByStatus')
+  async countExamsByStatus() {
+    return this.schedulingService.countExamsByStatus();
+  }
+
+  @Get('/getTopEnterprisesByScheduling')
+  async getTopEnterprisesByScheduling() {
+    return this.schedulingService.getTopEnterprisesByScheduling();
+  }
+
+  @Get('/getTop20Exams')
+  async getTop20Exams() {
+    return this.schedulingService.getTop20Exams();
+  }
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.schedulingService.findOne(id);

@@ -170,6 +170,59 @@ export class SchedulingService {
     }));
   }
 
+  async countExamsByStatus(): Promise<any[]> {
+    console.log('entrou aq');
+    const result = await this.schedulingRepository
+      .createQueryBuilder('scheduling')
+      .select('scheduling.status', 'status') // Agrupa pelo status do agendamento
+      .addSelect('COUNT(id)', 'examCount') // Conta os exames realizados
+      .groupBy('scheduling.status') // Agrupa pelo status
+      .getRawMany();
+
+    const quantidadeExamesPorStatus = result.map((row) => ({
+      status: row.status,
+      examCount: Number(row.examCount), // Garante que o retorno seja numérico
+    }));
+    console.log(quantidadeExamesPorStatus);
+    return quantidadeExamesPorStatus;
+  }
+
+  async getTopEnterprisesByScheduling(): Promise<any[]> {
+    const result = await this.schedulingRepository
+      .createQueryBuilder('scheduling')
+      .select('scheduling.id_enterprise', 'enterpriseId')
+      .addSelect('COUNT(scheduling.id)', 'totalAgendamentos')
+      .groupBy('scheduling.id_enterprise')
+      .orderBy('totalAgendamentos', 'DESC')
+      .limit(10)
+      .leftJoinAndSelect('scheduling.enterprise', 'enterprise') // Caso queira trazer detalhes da empresa
+      .getRawMany();
+
+    const top10empresas = result.map((row) => ({
+      enterprise_id: row.enterprise_id,
+      enterprise_cnpj: row.enterprise_cnpj,
+      enterprise_legalName: row.enterprise_legalName,
+      countScheduling: Number(row.totalAgendamentos),
+    }));
+
+    return top10empresas;
+  }
+
+  async getTop20Exams(): Promise<any[]> {
+    return this.schedulingRepository
+      .createQueryBuilder('scheduling')
+      .leftJoin('scheduling.performedExams', 'performedExams')
+      .leftJoin('performedExams.exam', 'exam')
+      .select('exam.id', 'examId')
+      .addSelect('exam.specialty', 'specialty') // Supondo que o nome do exame está no campo `name`
+      .addSelect('COUNT(exam.id)', 'totalAgendamentos')
+      .groupBy('exam.id')
+      .addGroupBy('exam.specialty')
+      .orderBy('totalAgendamentos', 'DESC')
+      .limit(20)
+      .getRawMany();
+  }
+
   async update(
     id: number,
     updateSchedulingDTO: UpdateSchedulingDTO,
