@@ -49,7 +49,6 @@ export class AuthController {
 
   @Get()
   async findAll() {
-    const users = await this.authService.findAllUsers();
-    return { message: 'Lista de usuários recuperada com sucesso', users };
+    return this.authService.findAllUsers();
   }
 }
