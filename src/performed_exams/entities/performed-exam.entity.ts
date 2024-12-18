@@ -9,6 +9,13 @@ export class PerformedExam {
 
   @PrimaryColumn()
   id_exam: number;
+
+  @Column({ type: 'date', nullable: true })
+  dataRealizacaoExameLaboratorial: Date;
+
+  @Column({ type: 'date', nullable: true })
+  dataResultadoExameLaboratorial: Date;
+
   @ManyToOne(() => Scheduling, (scheduling) => scheduling.performedExams, {
     onDelete: 'CASCADE', // Adiciona comportamento de exclusão em cascata
     onUpdate: 'CASCADE', // Garante atualização em cascata

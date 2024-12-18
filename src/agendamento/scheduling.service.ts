@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { EnterpriseService } from 'src/enterprise/enterprise.service';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Scheduling } from './entites/scheduling.entity';
 import { PacienteService } from 'src/paciente/paciente.service';
 import { CreateSchedulingDTO } from './dto/create-scheduling.dto';
@@ -133,6 +133,8 @@ export class SchedulingService {
         specialty: exam.exam?.specialty || null, // Adiciona specialty ao resultado.
         category: exam.exam?.category || null,
         laboratoryResultUrl: exam.laboratoryResultUrl,
+        dataRealizacaoExameLaboratorial: exam.dataRealizacaoExameLaboratorial,
+        dataResultadoExameLaboratorial: exam.dataResultadoExameLaboratorial,
       })),
     };
   }
@@ -166,6 +168,8 @@ export class SchedulingService {
         specialty: exam.exam?.specialty || null, // Adiciona specialty ao resultado.
         category: exam.exam?.category || null,
         laboratoryResultUrl: exam.laboratoryResultUrl,
+        dataRealizacaoExameLaboratorial: exam.dataRealizacaoExameLaboratorial,
+        dataResultadoExameLaboratorial: exam.dataResultadoExameLaboratorial,
       })),
     }));
   }
@@ -221,6 +225,16 @@ export class SchedulingService {
       .orderBy('totalAgendamentos', 'DESC')
       .limit(20)
       .getRawMany();
+  }
+
+  async getSchedulingByDate(dataAgendamento: string): Promise<any[]> {
+    // Busca os agendamentos entre o início e o fim do dia
+    const schedulings = await this.schedulingRepository.query(
+      `SELECT * FROM scheduling 
+WHERE dataAgendamento BETWEEN '${dataAgendamento} 00:00:00' AND '${dataAgendamento} 23:59:59' order by dataAgendamento asc;`,
+    );
+
+    return schedulings;
   }
 
   async update(
@@ -317,6 +331,12 @@ export class SchedulingService {
               id_scheduling: id,
               id_exam: exam.id_exam,
               laboratoryResultUrl: exam.laboratoryResultUrl,
+              dataRealizacaoExameLaboratorial: new Date(
+                exam.dataRealizacaoExameLaboratorial,
+              ),
+              dataResultadoExameLaboratorial: exam.laboratoryResultUrl
+                ? new Date()
+                : null,
             },
           );
         console.log('Url atualizada', examesRealizadosAtualizados);

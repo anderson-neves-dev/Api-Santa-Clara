@@ -13,6 +13,7 @@ import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SchedulingService } from './scheduling.service';
 import { CreateSchedulingDTO } from './dto/create-scheduling.dto';
 import { UpdateSchedulingDTO } from './dto/update-scheduling.dto';
+import { CustomError } from 'src/shareds/errors';
 
 @ApiTags('Scheduling')
 @Controller('scheduling')
@@ -43,6 +44,18 @@ export class SchedulingController {
   async getTop20Exams() {
     return this.schedulingService.getTop20Exams();
   }
+
+  @Get('/getSchedulingByDate/:date')
+  async getSchedulingByDate(@Param('date') date: string) {
+    const parsedDate = new Date(date); // Converte a string para uma data
+    if (isNaN(parsedDate.getTime())) {
+      throw new CustomError('Invalid date format');
+    }
+
+    // Chama o serviço passando a data ajustada
+    return this.schedulingService.getSchedulingByDate(date);
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.schedulingService.findOne(id);

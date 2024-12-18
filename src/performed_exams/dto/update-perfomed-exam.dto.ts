@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdatePerfomedExamDTO {
   @ApiProperty()
@@ -11,4 +12,14 @@ export class UpdatePerfomedExamDTO {
   @IsNotEmpty()
   @IsString()
   laboratoryResultUrl: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  dataRealizacaoExameLaboratorial: Date;
+
+  @ApiProperty()
+  @IsOptional()
+  @Transform(({ value }) => (value ? new Date(value) : undefined))
+  dataResultadoExameLaboratorial: Date;
 }

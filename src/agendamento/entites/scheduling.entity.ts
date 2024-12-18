@@ -30,7 +30,7 @@ export class Scheduling {
   @Column({ type: 'date', nullable: true })
   dataRealizacaoExame: Date;
 
-  @Column({ type: 'date', nullable: true })
+  @Column({ type: 'datetime', nullable: true })
   dataAgendamento: Date;
 
   @Column({ type: 'varchar', length: 200, nullable: true })
