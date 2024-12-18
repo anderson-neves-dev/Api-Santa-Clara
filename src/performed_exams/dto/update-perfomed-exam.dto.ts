@@ -17,9 +17,4 @@ export class UpdatePerfomedExamDTO {
   @IsOptional()
   @Transform(({ value }) => (value ? new Date(value) : undefined))
   dataRealizacaoExameLaboratorial: Date;
-
-  @ApiProperty()
-  @IsOptional()
-  @Transform(({ value }) => (value ? new Date(value) : undefined))
-  dataResultadoExameLaboratorial: Date;
 }
