@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { EnterpriseService } from 'src/enterprise/enterprise.service';
-import { Between, Repository } from 'typeorm';
+import { Between, Repository, UpdateResult } from 'typeorm';
 import { Scheduling } from './entites/scheduling.entity';
 import { PacienteService } from 'src/paciente/paciente.service';
 import { CreateSchedulingDTO } from './dto/create-scheduling.dto';
@@ -125,6 +125,7 @@ export class SchedulingService {
       status: scheduling.status,
       tipoExame: scheduling.tipoExame,
       parecer: scheduling.parecer,
+      compareceu: scheduling.compareceu,
       patient: scheduling.patient,
       enterprise: scheduling.enterprise,
       doctor: scheduling.doctor,
@@ -160,6 +161,7 @@ export class SchedulingService {
       status: scheduling.status,
       tipoExame: scheduling.tipoExame,
       parecer: scheduling.parecer,
+      compareceu: scheduling.compareceu,
       patient: scheduling.patient,
       enterprise: scheduling.enterprise,
       doctor: scheduling.doctor,
@@ -344,6 +346,7 @@ WHERE dataAgendamento BETWEEN '${dataAgendamento} 00:00:00' AND '${dataAgendamen
     }
 
     const schedulingUpdate = new Scheduling({
+      compareceu: schedulingExisting.compareceu,
       dataAgendamento: updateSchedulingDTO.dataAgendamento
         ? new Date(updateSchedulingDTO.dataAgendamento)
         : schedulingExisting.dataAgendamento,
@@ -363,6 +366,20 @@ WHERE dataAgendamento BETWEEN '${dataAgendamento} 00:00:00' AND '${dataAgendamen
     });
 
     return await this.schedulingRepository.update(id, schedulingUpdate);
+  }
+
+  async atualizaComparecer(id: number): Promise<any> {
+    const scheduling = await this.schedulingRepository.findOne({
+      where: { id },
+    });
+
+    if (!scheduling) {
+      throw new CustomError('Agendamento não cadastrado');
+    }
+    return this.schedulingRepository.update(id, {
+      ...scheduling,
+      compareceu: !scheduling.compareceu,
+    });
   }
 
   async delete(id: number): Promise<void> {

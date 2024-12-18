@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   ParseIntPipe,
+  Patch,
 } from '@nestjs/common';
 
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -72,6 +73,11 @@ export class SchedulingController {
     @Body() updateScheduling: UpdateSchedulingDTO,
   ) {
     return this.schedulingService.update(id, updateScheduling);
+  }
+
+  @Patch('atualiza-comparecer/:id')
+  atualizaComparecer(@Param('id', ParseIntPipe) id: number) {
+    return this.schedulingService.atualizaComparecer(id);
   }
 
   @Delete('/:id')

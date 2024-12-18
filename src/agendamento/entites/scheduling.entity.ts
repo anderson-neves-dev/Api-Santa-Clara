@@ -45,6 +45,9 @@ export class Scheduling {
   @Column({ type: 'enum', enum: Opinion, nullable: true })
   parecer: Opinion;
 
+  @Column({ type: 'boolean', default: false })
+  compareceu: Boolean;
+
   @ManyToOne(() => Paciente, (patient) => patient.scheduling, { cascade: true })
   @JoinColumn({
     name: 'id_patient',
