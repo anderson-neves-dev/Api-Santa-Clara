@@ -9,8 +9,10 @@ export class PerformedExam {
 
   @PrimaryColumn()
   id_exam: number;
-
-  @ManyToOne(() => Scheduling, (scheduling) => scheduling.performedExams)
+  @ManyToOne(() => Scheduling, (scheduling) => scheduling.performedExams, {
+    onDelete: 'CASCADE', // Adiciona comportamento de exclusão em cascata
+    onUpdate: 'CASCADE', // Garante atualização em cascata
+  })
   @JoinColumn({ name: 'id_scheduling' }) // Associa id_scheduling como chave estrangeira
   scheduling: Scheduling;
 
